@@ -36,10 +36,8 @@ class AuthUserService {
     const { password: _, ...userWithoutPassword } = user;
 
     return {
-      id: user.id,
       user: userWithoutPassword,
       token,
-
     };
   }
 }

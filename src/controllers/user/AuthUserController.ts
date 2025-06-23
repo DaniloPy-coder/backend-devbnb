@@ -7,12 +7,20 @@ class AuthUserController {
 
     const authUserService = new AuthUserService();
 
-    const auth = await authUserService.execute({
-      email,
-      password,
+    const { user, token } = await authUserService.execute({ email, password });
+    console.log("User recebido do service:", user);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24, // 1 dia
     });
 
-    return res.json(auth);
+    return res.json({
+      user,
+      token,
+    });
   }
 }
 

@@ -15,12 +15,33 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  email String 
-  password String
+  id         String    @id @default(uuid())
+  name       String
+  email      String
+  password   String
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
+  places Place[] @relation("UserPlaces")
+
   @@map("users")
+}
+
+model Place {
+  id          String   @id @default(uuid())
+  title       String
+  city        String
+  photos      String[]
+  description String
+  extras      String
+  perks       String[]
+  price       Int
+  checkin     String
+  checkout    String
+  guests      Int
+
+  userId String
+  user   User   @relation("UserPlaces", fields: [userId], references: [id])
+
+  @@map("places")
 }
