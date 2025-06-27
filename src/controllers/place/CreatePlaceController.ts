@@ -17,22 +17,20 @@ class CreatePlaceController {
 
         const userId = req.user_id;
 
-        // Validação básica
         if (!userId || !checkin || !checkout) {
             return res.status(400).json({ error: "Campos obrigatórios ausentes" });
         }
 
-        if (!req.file) {
-            return res.status(400).json({ error: "Arquivo não encontrado" });
+        if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
+            return res.status(400).json({ error: "Arquivos não encontrados" });
         }
 
-        // Pega nome do arquivo
-        const { filename } = req.file;
-        const photos = [filename];
+        // Pega nomes dos arquivos
+        const files = req.files as Express.Multer.File[];
+        const photos = files.map(file => file.filename);
 
-        // Garante que 'perks' seja sempre array de strings
+        // Processa perks como array
         let formattedPerks: string[] = [];
-
         try {
             const parsed = JSON.parse(perks);
             formattedPerks = Array.isArray(parsed) ? parsed : [parsed];

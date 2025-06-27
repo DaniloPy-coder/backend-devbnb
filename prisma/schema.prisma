@@ -22,7 +22,8 @@ model User {
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
-  places Place[] @relation("UserPlaces")
+  places   Place[]   @relation("UserPlaces")
+  bookings Booking[]
 
   @@map("users")
 }
@@ -43,5 +44,26 @@ model Place {
   userId String
   user   User   @relation("UserPlaces", fields: [userId], references: [id])
 
+  bookings Booking[]
+
   @@map("places")
+}
+
+model Booking {
+  id       String   @id @default(uuid())
+  checkin  DateTime
+  checkout DateTime
+  guests   Int
+  price    Int
+  total    Int
+  daily    Int
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  placeId String
+  place   Place  @relation(fields: [placeId], references: [id])
+
+  @@map("bookings")
 }

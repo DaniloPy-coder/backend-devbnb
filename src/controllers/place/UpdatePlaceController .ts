@@ -14,6 +14,7 @@ class UpdatePlaceController {
             checkout,
             guests,
             price,
+            oldPhotos,
         } = req.body;
 
         const files = req.files as Express.Multer.File[];
@@ -34,6 +35,7 @@ class UpdatePlaceController {
                 guests: Number(guests),
                 price: Number(price),
                 photos,
+                oldPhotos: oldPhotos ? JSON.parse(oldPhotos) : [], // oldPhotos vem como string no FormData
             });
 
             return res.json(place);

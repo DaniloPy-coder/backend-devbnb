@@ -9,12 +9,14 @@ import { ListPlaceController } from "./controllers/place/ListPlaceController";
 import { DetailPlaceController } from "./controllers/place/DetailPlaceController";
 import { UpdatePlaceController } from "./controllers/place/UpdatePlaceController ";
 import { ListAllPlacesController } from "./controllers/place/ListAllPlacesController";
+import { BookingController } from "./controllers/booking/BookingController";
+import { ListBookingsController } from "./controllers/booking/ListBookingsController";
+import { DeleteBookingController } from "./controllers/booking/DeleteBookingController";
 
 import uploadConfig from "./config/multer";
 import multer from "multer";
 
 const router = Router();
-
 const upload = multer(uploadConfig.upload("./tmp"));
 
 // ROTAS USER
@@ -30,8 +32,13 @@ router.post("/logout", (req: Request, res: Response) => {
 // ROTAS PLACES
 router.get("/places/:id", isAuthenticated, new DetailPlaceController().handle);
 router.get("/user/places", isAuthenticated, new ListPlaceController().handle);
-router.post("/places", isAuthenticated, upload.single("photos"), new CreatePlaceController().handle);
+router.post("/places", isAuthenticated, upload.array("photos"), new CreatePlaceController().handle);
 router.put("/places/:id", isAuthenticated, upload.array("photos"), new UpdatePlaceController().handle);
 router.get("/places", new ListAllPlacesController().handle);
+
+// ROTAS BOOKING
+router.post("/bookings", isAuthenticated, new BookingController().handle);
+router.get("/bookings/user/:userId", new ListBookingsController().handle);
+router.delete("/bookings/:id", new DeleteBookingController().handle);
 
 export { router };
