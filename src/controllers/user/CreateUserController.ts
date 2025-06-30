@@ -3,7 +3,6 @@ import { CreateUserService } from "../../services/user/CreateUserService";
 
 class CreateUserController {
   async handle(req: Request, res: Response) {
-    console.log("Dados recebidos no corpo da requisição:", req.body);
 
     const { name, email, password } = req.body;
 

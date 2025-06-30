@@ -1,44 +1,102 @@
 import { Router, Request, Response } from "express";
+import multer from "multer";
+
+import uploadConfig from "./config/multer";
+
+import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 import { CreateUserController } from "./controllers/user/CreateUserController";
-import { DetailUserController } from "./controllers/user/DetailUserController";
-import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { AuthUserController } from "./controllers/user/AuthUserController";
+import { DetailUserController } from "./controllers/user/DetailUserController";
+
 import { CreatePlaceController } from "./controllers/place/CreatePlaceController";
-import { ListPlaceController } from "./controllers/place/ListPlaceController";
 import { DetailPlaceController } from "./controllers/place/DetailPlaceController";
-import { UpdatePlaceController } from "./controllers/place/UpdatePlaceController ";
+import { ListPlaceController } from "./controllers/place/ListPlaceController";
 import { ListAllPlacesController } from "./controllers/place/ListAllPlacesController";
+
 import { BookingController } from "./controllers/booking/BookingController";
 import { ListBookingsController } from "./controllers/booking/ListBookingsController";
 import { DeleteBookingController } from "./controllers/booking/DeleteBookingController";
+import { UpdatePlaceController } from "./controllers/place/UpdatePlaceController ";
 
-import uploadConfig from "./config/multer";
-import multer from "multer";
-
-const router = Router();
+// Config upload
 const upload = multer(uploadConfig.upload("./tmp"));
 
-// ROTAS USER
-router.post("/users", new CreateUserController().handle);
-router.post("/login", new AuthUserController().handle);
-router.get("/me", isAuthenticated, new DetailUserController().handle);
+// Controllers
+const createUserController = new CreateUserController();
+const authUserController = new AuthUserController();
+const detailUserController = new DetailUserController();
 
+const createPlaceController = new CreatePlaceController();
+const detailPlaceController = new DetailPlaceController();
+const listPlaceController = new ListPlaceController();
+const updatePlaceController = new UpdatePlaceController();
+const listAllPlacesController = new ListAllPlacesController();
+
+const bookingController = new BookingController();
+const listBookingsController = new ListBookingsController();
+const deleteBookingController = new DeleteBookingController();
+
+const router = Router();
+
+// ROTAS USER
+router.post("/users", createUserController.handle.bind(createUserController));
+router.post("/login", authUserController.handle.bind(authUserController));
+router.get("/me", isAuthenticated, detailUserController.handle.bind(detailUserController));
 router.post("/logout", (req: Request, res: Response) => {
     res.clearCookie("auth_token");
-    res.status(200).json({ message: "Deslogado com successo" });
+    res.json({ message: "Logout successful" });
 });
 
 // ROTAS PLACES
-router.get("/places/:id", isAuthenticated, new DetailPlaceController().handle);
-router.get("/user/places", isAuthenticated, new ListPlaceController().handle);
-router.post("/places", isAuthenticated, upload.array("photos"), new CreatePlaceController().handle);
-router.put("/places/:id", isAuthenticated, upload.array("photos"), new UpdatePlaceController().handle);
-router.get("/places", new ListAllPlacesController().handle);
+router.post(
+    "/places",
+    isAuthenticated,
+    upload.array("photos"),
+    createPlaceController.handle.bind(createPlaceController)
+);
+
+router.get(
+    "/places/:id",
+    isAuthenticated,
+    detailPlaceController.handle.bind(detailPlaceController)
+);
+
+router.get(
+    "/user/places",
+    isAuthenticated,
+    listPlaceController.handle.bind(listPlaceController)
+);
+
+router.put(
+    "/places/:id",
+    isAuthenticated,
+    upload.array("photos"),
+    updatePlaceController.handle.bind(updatePlaceController)
+);
+
+router.get(
+    "/places",
+    listAllPlacesController.handle.bind(listAllPlacesController)
+);
 
 // ROTAS BOOKING
-router.post("/bookings", isAuthenticated, new BookingController().handle);
-router.get("/bookings/user/:userId", new ListBookingsController().handle);
-router.delete("/bookings/:id", new DeleteBookingController().handle);
+router.post(
+    "/bookings",
+    isAuthenticated,
+    bookingController.handle.bind(bookingController)
+);
+
+router.get(
+    "/bookings/user/:userId",
+    isAuthenticated,
+    listBookingsController.handle.bind(listBookingsController)
+);
+
+router.delete(
+    "/bookings/:id",
+    isAuthenticated,
+    deleteBookingController.handle.bind(deleteBookingController)
+);
 
 export { router };

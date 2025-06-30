@@ -17,8 +17,36 @@ class UpdatePlaceController {
             oldPhotos,
         } = req.body;
 
-        const files = req.files as Express.Multer.File[];
-        const photos = files?.map((file) => file.filename) || [];
+
+        // Validação dos campos numéricos
+        const guestsNum = Number(guests);
+        const priceNum = Number(price);
+
+        if (isNaN(guestsNum) || isNaN(priceNum)) {
+            return res.status(400).json({
+                message: "Guests ou Price inválidos",
+            });
+        }
+
+        // Parsing seguro de oldPhotos que pode ser string ou array
+        let oldPhotosParsed: string[] = [];
+        if (oldPhotos) {
+            if (typeof oldPhotos === "string") {
+                oldPhotosParsed = [oldPhotos];
+            } else if (Array.isArray(oldPhotos)) {
+                oldPhotosParsed = oldPhotos;
+            } else {
+                return res.status(400).json({
+                    message: "oldPhotos inválido: formato inesperado",
+                });
+            }
+        }
+
+        // Processar novas fotos enviadas pelo multer (req.files)
+        let photos: string[] = [];
+        if (req.files && Array.isArray(req.files)) {
+            photos = req.files.map(file => file.filename);
+        }
 
         try {
             const updatePlaceService = new UpdatePlaceService();
@@ -32,15 +60,14 @@ class UpdatePlaceController {
                 extras,
                 checkin,
                 checkout,
-                guests: Number(guests),
-                price: Number(price),
+                guests: guestsNum,
+                price: priceNum,
                 photos,
-                oldPhotos: oldPhotos ? JSON.parse(oldPhotos) : [], // oldPhotos vem como string no FormData
+                oldPhotos: oldPhotosParsed,
             });
 
             return res.json(place);
         } catch (error: any) {
-            console.error(error);
             return res.status(400).json({
                 message: error.message || "Erro ao atualizar place",
             });

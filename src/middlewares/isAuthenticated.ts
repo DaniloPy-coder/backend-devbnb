@@ -9,18 +9,19 @@ export function isAuthenticated(
     req: Request,
     res: Response,
     next: NextFunction
-) {
+): void {
     const token = req.cookies?.token;
 
     if (!token) {
-        return res.status(401).json({ error: "Token não encontrado" });
+        res.status(401).json({ error: "Token não encontrado" });
+        return;
     }
 
     try {
-        const { sub } = verify(token, process.env.JWT_SECRET) as Payload;
+        const { sub } = verify(token, process.env.JWT_SECRET!) as Payload;
         req.user_id = sub;
-        return next();
-    } catch (err) {
-        return res.status(401).json({ error: "Token inválido" });
+        next();
+    } catch {
+        res.status(401).json({ error: "Token inválido" });
     }
 }

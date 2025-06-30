@@ -28,29 +28,33 @@ class CreatePlaceService {
         photos,
         userId,
     }: PlaceRequest) {
-        const place = await prismaClient.place.create({
-            data: {
-                title,
-                city,
-                checkin,
-                checkout,
-                guests,
-                price,
-                description,
-                extras,
-                perks,
-                photos,
-                user: {
-                    connect: {
-                        id: userId,
+        try {
+            const place = await prismaClient.place.create({
+                data: {
+                    title,
+                    city,
+                    checkin,
+                    checkout,
+                    guests,
+                    price,
+                    description,
+                    extras,
+                    perks,
+                    photos,
+                    user: {
+                        connect: {
+                            id: userId,
+                        },
                     },
                 },
-            },
-        });
+            });
 
-        return place;
+            return place;
+        } catch (error) {
+            console.error("Erro ao criar place no Service:", error);
+            throw error;
+        }
     }
-
 }
 
 export { CreatePlaceService };

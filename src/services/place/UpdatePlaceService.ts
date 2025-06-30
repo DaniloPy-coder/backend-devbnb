@@ -44,7 +44,7 @@ export class UpdatePlaceService {
             try {
                 perksArray = JSON.parse(perks);
             } catch {
-                perksArray = [];
+                throw new Error("Perks inválido: não é um JSON válido");
             }
         } else if (Array.isArray(perks)) {
             perksArray = perks;

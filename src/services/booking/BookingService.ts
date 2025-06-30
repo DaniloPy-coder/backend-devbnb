@@ -15,7 +15,6 @@ interface CancelBookingRequest {
 
 export class BookingService {
     async createBooking(data: CreateBookingRequest) {
-        console.log("Dados recebidos no createBooking:", data);
 
         const place = await prismaClient.place.findUnique({
             where: { id: data.placeId },

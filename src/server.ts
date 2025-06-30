@@ -1,22 +1,21 @@
 import express, { Request, Response, NextFunction } from "express";
-import { router } from "./routes";
 import cors from "cors";
-import path from "path";
+import { resolve } from "path";
 import cookieParser from "cookie-parser";
 
-
+import { router } from "./routes";
 
 const app = express();
+
 app.use(express.json());
 app.use(cors({
   origin: "http://localhost:5173",
-  credentials: true,               // aceita envio de cookies/credenciais
+  credentials: true,
 }));
 app.use(cookieParser());
-
 app.use(router);
 
-app.use("/files", express.static(path.resolve(__dirname, "..", "tmp")));
+app.use("/files", express.static(resolve(__dirname, "..", "..", "tmp")));
 
 // Middleware de tratamento de erro - tem que vir por último
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

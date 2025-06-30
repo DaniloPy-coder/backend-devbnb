@@ -8,7 +8,6 @@ class AuthUserController {
     const authUserService = new AuthUserService();
 
     const { user, token } = await authUserService.execute({ email, password });
-    console.log("User recebido do service:", user);
 
     res.cookie("token", token, {
       httpOnly: true,
