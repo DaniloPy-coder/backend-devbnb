@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { CreatePlaceService } from "../../services/place/CreatePlaceService";
 import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -38,14 +39,23 @@ class CreatePlaceController {
 
         try {
             for (const file of files) {
-                if (!file.path) {
-                    return res.status(400).json({ error: "Arquivo temporário não encontrado" });
-                }
+                const result = await new Promise<string>((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        { folder: "places" },
+                        (error, result) => {
+                            if (error) return reject(error);
+                            if (result?.secure_url) {
+                                resolve(result.secure_url);
+                            } else {
+                                reject(new Error("Upload falhou sem URL"));
+                            }
+                        }
+                    );
 
-                const uploadResult = await cloudinary.uploader.upload(file.path, {
-                    folder: "places",
+                    streamifier.createReadStream(file.buffer).pipe(uploadStream);
                 });
-                photos.push(uploadResult.secure_url);
+
+                photos.push(result);
             }
         } catch (uploadError) {
             console.error("Erro no upload do Cloudinary:", uploadError);
@@ -63,8 +73,6 @@ class CreatePlaceController {
             }
         } else if (Array.isArray(perks)) {
             formattedPerks = perks;
-        } else {
-            formattedPerks = [];
         }
 
         try {

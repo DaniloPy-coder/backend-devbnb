@@ -1,5 +1,13 @@
 import { Request, Response } from "express";
 import { UpdatePlaceService } from "../../services/place/UpdatePlaceService";
+import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET,
+});
 
 class UpdatePlaceController {
     async handle(req: Request, res: Response) {
@@ -17,8 +25,6 @@ class UpdatePlaceController {
             oldPhotos,
         } = req.body;
 
-
-        // Validação dos campos numéricos
         const guestsNum = Number(guests);
         const priceNum = Number(price);
 
@@ -28,7 +34,6 @@ class UpdatePlaceController {
             });
         }
 
-        // Parsing seguro de oldPhotos que pode ser string ou array
         let oldPhotosParsed: string[] = [];
         if (oldPhotos) {
             if (typeof oldPhotos === "string") {
@@ -42,10 +47,32 @@ class UpdatePlaceController {
             }
         }
 
-        // Processar novas fotos enviadas pelo multer (req.files)
         let photos: string[] = [];
         if (req.files && Array.isArray(req.files)) {
-            photos = req.files.map(file => file.filename);
+            try {
+                for (const file of req.files as Express.Multer.File[]) {
+                    const url = await new Promise<string>((resolve, reject) => {
+                        const uploadStream = cloudinary.uploader.upload_stream(
+                            { folder: "places" },
+                            (error, result) => {
+                                if (error) return reject(error);
+                                if (result?.secure_url) {
+                                    resolve(result.secure_url);
+                                } else {
+                                    reject(new Error("Upload falhou sem URL"));
+                                }
+                            }
+                        );
+
+                        streamifier.createReadStream(file.buffer).pipe(uploadStream);
+                    });
+
+                    photos.push(url);
+                }
+            } catch (uploadError) {
+                console.error("Erro no upload do Cloudinary:", uploadError);
+                return res.status(500).json({ error: "Erro ao enviar imagens" });
+            }
         }
 
         try {

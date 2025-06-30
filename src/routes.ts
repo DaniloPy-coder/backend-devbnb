@@ -19,7 +19,7 @@ import { ListBookingsController } from "./controllers/booking/ListBookingsContro
 import { DeleteBookingController } from "./controllers/booking/DeleteBookingController";
 import { UpdatePlaceController } from "./controllers/place/UpdatePlaceController";
 // Config upload
-const upload = multer(uploadConfig.upload("./tmp"));
+const upload = multer(uploadConfig.upload());
 
 // Controllers
 const createUserController = new CreateUserController();
