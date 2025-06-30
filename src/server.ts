@@ -1,13 +1,10 @@
 import express, { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import cors from "cors";
-import { resolve } from "path";
 import cookieParser from "cookie-parser";
 
 import { router } from "./routes";
 
 const app = express();
-
-const PORT = process.env.PORT || 3333;
 
 app.use(express.json());
 app.use(
@@ -18,17 +15,12 @@ app.use(
 );
 app.use(cookieParser());
 
-
 app.use(router);
 
-app.use("/files", express.static(resolve(__dirname, "..", "..", "tmp")));
-
-// Middleware de tratamento de erros — deve vir por último
+// Middleware de tratamento de erros
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof Error) {
-    res.status(400).json({
-      error: err.message,
-    });
+    res.status(400).json({ error: err.message });
     return;
   }
 
@@ -40,6 +32,4 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log("Server is running on port 3333");
-});
+export default app; 

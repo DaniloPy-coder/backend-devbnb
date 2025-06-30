@@ -17,8 +17,7 @@ import { ListAllPlacesController } from "./controllers/place/ListAllPlacesContro
 import { BookingController } from "./controllers/booking/BookingController";
 import { ListBookingsController } from "./controllers/booking/ListBookingsController";
 import { DeleteBookingController } from "./controllers/booking/DeleteBookingController";
-import { UpdatePlaceController } from "./controllers/place/UpdatePlaceController ";
-
+import { UpdatePlaceController } from "./controllers/place/UpdatePlaceController";
 // Config upload
 const upload = multer(uploadConfig.upload("./tmp"));
 
