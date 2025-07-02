@@ -49,10 +49,14 @@ router.post("/logout", (req: Request, res: Response) => {
 
 // ROTAS PLACES
 router.post(
-    "/places",
+    "/upload",
     isAuthenticated,
     upload.array("photos"),
-    createPlaceController.handle.bind(createPlaceController)
+    (req: Request, res: Response) => {
+        const files = req.files as Express.Multer.File[];
+        const uploadedFiles = files.map(file => file.filename); // ou o caminho que você quer retornar
+        res.json({ files: uploadedFiles });
+    }
 );
 
 router.get(
