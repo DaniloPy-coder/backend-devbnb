@@ -10,7 +10,14 @@ export function isAuthenticated(
     res: Response,
     next: NextFunction
 ): void {
-    const token = req.cookies?.token;
+    const authHeader = req.headers.authorization;
+    let token: string | undefined;
+
+    if (authHeader?.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+    } else if (req.cookies?.token) {
+        token = req.cookies.token;
+    }
 
     if (!token) {
         res.status(401).json({ error: "Token não encontrado" });
