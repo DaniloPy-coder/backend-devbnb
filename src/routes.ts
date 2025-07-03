@@ -48,6 +48,14 @@ router.post("/logout", (req: Request, res: Response) => {
 });
 
 // ROTAS PLACES
+
+router.post(
+    "/places",
+    isAuthenticated,
+    upload.array("photos"),
+    createPlaceController.handle.bind(createPlaceController)
+);
+
 router.post(
     "/upload",
     isAuthenticated,
