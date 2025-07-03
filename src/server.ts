@@ -9,7 +9,8 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   origin: "https://devbnb-front.vercel.app",
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Authorization", "Content-Type"]
 }));
 
 
