@@ -18,6 +18,8 @@ import { BookingController } from "./controllers/booking/BookingController";
 import { ListBookingsController } from "./controllers/booking/ListBookingsController";
 import { DeleteBookingController } from "./controllers/booking/DeleteBookingController";
 import { UpdatePlaceController } from "./controllers/place/UpdatePlaceController";
+import { UploadPhotoController } from "./controllers/place/UploadPhotoController";
+
 // Config upload
 const upload = multer(uploadConfig.upload());
 
@@ -25,6 +27,7 @@ const upload = multer(uploadConfig.upload());
 const createUserController = new CreateUserController();
 const authUserController = new AuthUserController();
 const detailUserController = new DetailUserController();
+const uploadPhotoController = new UploadPhotoController();
 
 const createPlaceController = new CreatePlaceController();
 const detailPlaceController = new DetailPlaceController();
@@ -60,11 +63,7 @@ router.post(
     "/upload",
     isAuthenticated,
     upload.array("photos"),
-    (req: Request, res: Response) => {
-        const files = req.files as Express.Multer.File[];
-        const uploadedFiles = files.map(file => file.filename); // ou o caminho que você quer retornar
-        res.json({ files: uploadedFiles });
-    }
+    uploadPhotoController.handle.bind(uploadPhotoController)
 );
 
 router.get(
