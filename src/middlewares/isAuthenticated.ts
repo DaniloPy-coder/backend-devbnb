@@ -10,12 +10,14 @@ export function isAuthenticated(
     res: Response,
     next: NextFunction
 ): void {
+    // Tenta pegar do header Authorization primeiro
     const authHeader = req.headers.authorization;
     let token: string | undefined;
 
     if (authHeader?.startsWith("Bearer ")) {
         token = authHeader.split(" ")[1];
     } else if (req.cookies?.token) {
+        // Fallback para cookie
         token = req.cookies.token;
     }
 
