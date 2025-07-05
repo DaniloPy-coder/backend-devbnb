@@ -81,7 +81,6 @@ router.get(
 router.put(
     "/places/:id",
     isAuthenticated,
-    upload.array("photos"),
     updatePlaceController.handle.bind(updatePlaceController)
 );
 
