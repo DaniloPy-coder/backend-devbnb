@@ -33,4 +33,6 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
 app.use(errorHandler);
 
+app.listen(3333, () => console.log("Server is running on port 3333"));
+
 export default app; 
