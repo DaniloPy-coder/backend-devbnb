@@ -38,7 +38,6 @@ export class UpdatePlaceService {
             throw new Error("Place não encontrado");
         }
 
-        // Converte perks para array se necessário
         let perksArray: string[] = [];
         if (typeof perks === "string") {
             try {
@@ -50,7 +49,6 @@ export class UpdatePlaceService {
             perksArray = perks;
         }
 
-        // Combina as fotos antigas (que o usuário manteve) com as novas
         const combinedPhotos = [...(oldPhotos || []), ...(photos || [])];
 
         const updatedPlace = await prismaClient.place.update({
