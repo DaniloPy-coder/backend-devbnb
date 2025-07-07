@@ -8,15 +8,16 @@ interface Params {
 export class ListAllPlacesService {
     async execute({ checkin, checkout }: Params = {}) {
         if (checkin && checkout) {
+            const checkinDate = new Date(checkin);
+            const checkoutDate = new Date(checkout);
+
             const places = await prismaClient.place.findMany({
                 where: {
                     bookings: {
                         none: {
-                            OR: [
-                                {
-                                    checkin: { lte: checkout },
-                                    checkout: { gte: checkin },
-                                },
+                            AND: [
+                                { checkin: { lte: checkoutDate } },
+                                { checkout: { gte: checkinDate } },
                             ],
                         },
                     },
