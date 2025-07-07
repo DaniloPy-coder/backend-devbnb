@@ -4,8 +4,15 @@ import { ListAllPlacesService } from "../../services/place/ListAllPlacesService"
 class ListAllPlacesController {
     async handle(req: Request, res: Response) {
         try {
+            const { checkin, checkout } = req.query;
+
             const service = new ListAllPlacesService();
-            const places = await service.execute();
+
+            const places = await service.execute({
+                checkin: checkin as string | undefined,
+                checkout: checkout as string | undefined,
+            });
+
             return res.json(places);
         } catch (error) {
             console.error("Erro ao listar os places:", error);
