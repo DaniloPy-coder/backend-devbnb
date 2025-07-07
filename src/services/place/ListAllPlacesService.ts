@@ -2,15 +2,23 @@ import { prismaClient } from "../../prisma";
 
 export class ListAllPlacesService {
     async execute() {
-        const hoje = new Date().toISOString().split("T")[0];
+        const hoje = new Date(); // usa objeto Date, não string
 
         const places = await prismaClient.place.findMany({
             where: {
                 bookings: {
                     none: {
                         AND: [
-                            { checkin: { lte: hoje } },
-                            { checkout: { gte: hoje } },
+                            {
+                                checkin: {
+                                    lte: hoje,
+                                },
+                            },
+                            {
+                                checkout: {
+                                    gte: hoje,
+                                },
+                            },
                         ],
                     },
                 },
