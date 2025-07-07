@@ -68,7 +68,6 @@ router.post(
 
 router.get(
     "/places/:id",
-    isAuthenticated,
     detailPlaceController.handle.bind(detailPlaceController)
 );
 
